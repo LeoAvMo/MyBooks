@@ -8,20 +8,25 @@
 import SwiftUI
 
 struct BookListView: View {
+    @State private var createNewBook = false
     var body: some View {
         NavigationStack{
             List {
                 
             }
             .navigationTitle(Text("My Books"))
-            .toolbar{
+            .toolbar {
                 Button {
-                    
+                    createNewBook.toggle()
                 } label: {
-                    Image(systemName: "plus.cirle.fill")
+                    Image(systemName: "plus")
                         .imageScale(.large)
-                        .tint(.blue)
+                        .foregroundStyle(.blue)
                 }
+            }
+            .sheet(isPresented: $createNewBook) {
+                NewBookView()
+                    .presentationDetents([.medium])
             }
         }
     }
