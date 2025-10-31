@@ -5,7 +5,7 @@
 //  Created by Leo A.Molina on 29/10/25.
 //
 
-import Foundation
+import SwiftUI
 import SwiftData
 
 @Model
@@ -39,6 +39,18 @@ class Book {
         self.status = status
     }
     
+    // Computed property. Is not saved im the DB
+    var icon: Image {
+        switch status {
+                
+            case .onShelf:
+                Image(systemName: "checkmark.diamond.fill")
+            case .inProgress:
+                Image(systemName: "book.fill")
+            case .completed:
+                Image(systemName: "books.vertical.fill")
+        }
+    }
 }
 
 enum Status: Int, Codable, Identifiable, CaseIterable {
