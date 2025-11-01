@@ -20,9 +20,8 @@ struct BookListView: View {
                 } else {
                     List {
                         ForEach(books) { book in
-                            
                             NavigationLink{
-                                Text(book.title)
+                                EditBookView(book: book)
                             } label: {
                                 HStack(spacing: 10) {
                                     book.icon
@@ -36,7 +35,7 @@ struct BookListView: View {
                                         // Unwrapping the book's rating
                                         if let rating = book.rating {
                                             HStack{
-                                                ForEach(0..<rating, id: \.self) { _ in
+                                                ForEach(1..<rating, id: \.self) { _ in
                                                     Image(systemName: "star.fill")
                                                         .imageScale(.small)
                                                         .symbolRenderingMode(.multicolor)

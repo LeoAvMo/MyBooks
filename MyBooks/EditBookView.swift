@@ -9,7 +9,7 @@ import SwiftUI
 
 struct EditBookView: View {
     @Environment(\.dismiss) private var dismiss
-//    let book: Book
+    let book: Book
     @State private var status: Status = .onShelf
     @State private var rating: Int?
     @State private var title: String = ""
@@ -18,6 +18,7 @@ struct EditBookView: View {
     @State private var dateAdded = Date.distantPast
     @State private var dateStarted = Date.distantPast
     @State private var dateCompleted = Date.distantPast
+    @State private var firstView = true
     
     var body: some View {
         HStack {
@@ -39,7 +40,7 @@ struct EditBookView: View {
                 
                 if status == .inProgress || status == .completed {
                     LabeledContent {
-                        DatePicker("", selection: $dateStarted, displayedComponents: .date)
+                        DatePicker("", selection: $dateStarted, in: dateAdded..., displayedComponents: .date)
                     } label: {
                         Text("Date Started")
                     }
@@ -47,7 +48,7 @@ struct EditBookView: View {
                 
                 if status == .completed {
                     LabeledContent {
-                        DatePicker("", selection: $dateCompleted, displayedComponents: .date)
+                        DatePicker("", selection: $dateCompleted, in: dateAdded..., displayedComponents: .date)
                     } label: {
                         Text("Date Completed")
                     }
@@ -55,24 +56,27 @@ struct EditBookView: View {
             }
             .foregroundStyle(.secondary)
             .onChange(of: status) { oldValue, newValue in
-                // Changing
-                if newValue == .onShelf {
-                    // From .completed or .inProgress to .onShelf
-                    dateStarted = Date.distantPast
-                    dateCompleted = Date.distantPast
-                } else if newValue == .inProgress && oldValue == .completed {
-                    // From .completed to .inProgress
-                    dateCompleted = Date.distantPast
-                } else if newValue == .inProgress && oldValue == .onShelf {
-                    // Book has been started
-                    dateStarted = Date.now
-                } else if newValue == .completed && oldValue == .onShelf {
-                    // User forgot to add the started date and set .onShelf directly to completed
-                    dateStarted = dateAdded
-                    dateCompleted = Date.now
-                } else {
-                    // Completed
-                    dateCompleted = Date.now
+                if !firstView{
+                    // Changing
+                    if newValue == .onShelf {
+                        // From .completed or .inProgress to .onShelf
+                        dateStarted = Date.distantPast
+                        dateCompleted = Date.distantPast
+                    } else if newValue == .inProgress && oldValue == .completed {
+                        // From .completed to .inProgress
+                        dateCompleted = Date.distantPast
+                    } else if newValue == .inProgress && oldValue == .onShelf {
+                        // Book has been started
+                        dateStarted = Date.now
+                    } else if newValue == .completed && oldValue == .onShelf {
+                        // User forgot to add the started date and set .onShelf directly to completed
+                        dateStarted = dateAdded
+                        dateCompleted = Date.now
+                    } else {
+                        // Completed
+                        dateCompleted = Date.now
+                    }
+                    firstView = false
                 }
             }
             
@@ -120,17 +124,50 @@ struct EditBookView: View {
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            Button("Update") {
-                dismiss()
+            if changed {
+                Button("Update") {
+                    book.status = status
+                    book.rating = rating
+                    book.title = title
+                    book.author = author
+                    book.summary = summary
+                    book.dateAdded = dateAdded
+                    book.dateStarted = dateStarted
+                    book.dateCompleted = dateCompleted
+                    dismiss()
+                }
+                .buttonStyle(.borderedProminent)
             }
-            .buttonStyle(.borderedProminent)
         }
+        .onAppear {
+            status = book.status
+            rating = book.rating
+            title = book.title
+            author = book.author
+            summary = book.summary
+            dateAdded = book.dateAdded
+            dateStarted = book.dateStarted
+            dateCompleted = book.dateCompleted
+        }
+    }
+    
+    var changed: Bool {
+        status != book.status
+        || rating != book.rating
+        || title != book.title
+        || author != book.author
+        || summary != book.summary
+        || dateAdded != book.dateAdded
+        || dateStarted != book.dateStarted
+        || dateCompleted != book.dateCompleted
     }
 }
 
+/*
 #Preview {
     NavigationStack {
         EditBookView()
     }
 }
 
+*/
