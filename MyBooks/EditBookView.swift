@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct EditBookView: View {
+    @Environment(\.dismiss) private var dismiss
 //    let book: Book
     @State private var status: Status = .onShelf
     @State private var rating: Int?
@@ -76,10 +77,60 @@ struct EditBookView: View {
             }
             
             Divider()
+            
+            LabeledContent {
+                RatingsView(
+                    maxRating: 5,
+                    currentRating: Binding<Int>(
+                        get: { rating ?? 0 },
+                        set: { newValue in rating = newValue }
+                    ),
+                    width: 30
+                )
+            } label: {
+                Text("Rating")
+            }
+            
+            LabeledContent {
+                TextField("", text: $title)
+            } label: {
+                Text("Title")
+                    .foregroundStyle(.secondary)
+            }
+            
+            LabeledContent {
+                TextField("", text: $author)
+            } label: {
+                Text("Author")
+                    .foregroundStyle(.secondary)
+            }
+            
+            Divider()
+            
+            Text("Summary")
+                .foregroundStyle(.secondary)
+            TextEditor(text: $summary)
+                .padding(5)
+                .overlay(RoundedRectangle(cornerRadius: 20)
+                    .stroke(Color(uiColor: .tertiarySystemFill), lineWidth: 2))
+            
+        }
+        .padding()
+        .textFieldStyle(.roundedBorder)
+        .navigationTitle(title)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            Button("Update") {
+                dismiss()
+            }
+            .buttonStyle(.borderedProminent)
         }
     }
 }
 
 #Preview {
-    EditBookView()
+    NavigationStack {
+        EditBookView()
+    }
 }
+
