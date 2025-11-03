@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct EditBookView: View {
     @Environment(\.dismiss) private var dismiss
@@ -163,11 +164,11 @@ struct EditBookView: View {
     }
 }
 
-/*
+
 #Preview {
+    let preview = Preview(Book.self)
     NavigationStack {
-        EditBookView()
+        EditBookView(book: Book.sampleBooks[4])
+            .modelContainer(preview.container)
     }
 }
-
-*/
