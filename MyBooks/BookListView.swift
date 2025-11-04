@@ -18,7 +18,7 @@ struct BookListView: View {
     
     @State private var createNewBook = false
     @State private var sortOrder = SortOrder.status
-    
+    @State private var searchString = ""
     var body: some View {
         NavigationStack{
             Picker("", selection: $sortOrder){
@@ -28,7 +28,8 @@ struct BookListView: View {
             }
             .pickerStyle(SegmentedPickerStyle())
             
-            BookList(sortOrder: sortOrder)
+            BookList(sortOrder: sortOrder, searchString: searchString)
+                .searchable(text: $searchString, prompt: Text("Filter on title or author"))
             .navigationTitle(Text("My Books"))
             .toolbar {
                 Button {
