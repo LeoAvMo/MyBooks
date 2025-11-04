@@ -8,54 +8,27 @@
 import SwiftUI
 import SwiftData
 
+enum SortOrder: String, CaseIterable, Identifiable {
+    case status, title, author
+    
+    var id: Self { self }
+}
 struct BookListView: View {
-    @Environment(\.modelContext) private var context
-    @Query(sort: \Book.title) private var books: [Book]
+    
+    
     @State private var createNewBook = false
+    @State private var sortOrder = SortOrder.status
+    
     var body: some View {
         NavigationStack{
-            Group {
-                if books.isEmpty {
-                    ContentUnavailableView("No books yet",systemImage: "book.fill")
-                } else {
-                    List {
-                        ForEach(books) { book in
-                            NavigationLink{
-                                EditBookView(book: book)
-                            } label: {
-                                HStack(spacing: 10) {
-                                    book.icon
-                                    VStack(alignment: .leading){
-                                        Text(book.title)
-                                            .font(.title2)
-                                        Text(book.author)
-                                            .font(.subheadline)
-                                            .foregroundStyle(.secondary)
-                                         
-                                        // Unwrapping the book's rating
-                                        if let rating = book.rating {
-                                            HStack{
-                                                ForEach(1..<rating, id: \.self) { _ in
-                                                    Image(systemName: "star.fill")
-                                                        .imageScale(.small)
-                                                        .symbolRenderingMode(.multicolor)
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        .onDelete { indexSet in
-                            indexSet.forEach { index in
-                                let book = books[index]
-                                context.delete(book)
-                            }
-                        }
-                    }
-                    .listStyle(.plain)
+            Picker("", selection: $sortOrder){
+                ForEach(SortOrder.allCases) { sortOrder in
+                    Text("Sort by \(sortOrder.rawValue)").tag(sortOrder)
                 }
             }
+            .pickerStyle(SegmentedPickerStyle())
+            
+            BookList(sortOrder: sortOrder)
             .navigationTitle(Text("My Books"))
             .toolbar {
                 Button {
