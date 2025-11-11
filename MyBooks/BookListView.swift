@@ -26,7 +26,8 @@ struct BookListView: View {
                     Text("Sort by \(sortOrder.rawValue)").tag(sortOrder)
                 }
             }
-            .pickerStyle(SegmentedPickerStyle())
+            .pickerStyle(.menu)
+            .buttonStyle(.glass)
             
             BookList(sortOrder: sortOrder, searchString: searchString)
                 .searchable(text: $searchString, prompt: Text("Filter on title or author"))
